@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Pomodoro</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:300,100"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/tomato_1f345.png"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: 'Roboto', sans-serif;
+        font-weight: 100;
+        font-size: 1.3em;
+      }
+
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+      }
+
+      #mainContainer {
+        height: 100%;
+        width: 100%;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        background-color: #c5e0b8;
+        color: #222;
+      }
+
+      h2 {
+        font-size: 4.3em;
+      }
+
+      h1 {
+        font-size: 1.3em;
+        color: rgb(150, 33, 33);
+        text-shadow: 0px 4px 3px rgba(0, 0, 0, 0.3),
+          0px 3px 13px rgba(0, 0, 0, 0.07), 0px 18px 23px rgba(0, 0, 0, 0.15);
+      }
+
+      button {
+        background-color: rgb(209, 147, 105);
+        padding: 10px 0;
+        width: 250px;
+        border: none;
+        border-radius: 30px;
+        letter-spacing: 1px;
+        -webkit-transition: 0.2s;
+        transition: 0.2s;
+        margin-top: 30px;
+        cursor: pointer;
+        outline: none;
+        -webkit-box-shadow: 0px 12px rgb(189, 127, 85);
+        box-shadow: 0px 12px rgb(189, 127, 85);
+      }
+
+      button:hover {
+        -webkit-transform: translate(0px, 5px);
+        transform: translate(0px, 5px);
+        -webkit-box-shadow: 0px 7px rgb(189, 127, 85);
+        box-shadow: 0px 7px rgb(189, 127, 85);
+      }
+
+      button:active {
+        -webkit-transform: translate(0px, 10px);
+        transform: translate(0px, 10px);
+        -webkit-box-shadow: 0px 2px rgb(189, 127, 85);
+        box-shadow: 0px 2px rgb(189, 127, 85);
+      }
+
+      #boxContainer {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+        flex-direction: row;
+        margin-top: 90px;
+      }
+
+      .box {
+        width: 39px;
+        height: 39px;
+        margin-right: 1px;
+        background-color: #fff;
+        border: 2px rgb(120, 33, 33) solid;
+        border-radius: 3px;
+        text-align: center;
+        font-size: 0.5em;
+      }
+      span {
+        display: inline-block;
+        vertical-align: bottom;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="mainContainer">
+      <h1>Pomodoro 🍅</h1>
+      <h2></h2>
+      <button>start</button>
+      <div id="boxContainer">
+        <div class="box"><span></span></div>
+        <div class="box"><span></span></div>
+        <div class="box"><span></span></div>
+        <div class="box"><span></span></div>
+        <div class="box"><span></span></div>
+        <div class="box"><span></span></div>
+        <div class="box"><span></span></div>
+        <div class="box"><span></span></div>
+      </div>
+    </div>
+  </body>
+  <script>
+    init();
+
+    function init() {
+      const button = document.querySelector('button');
+      const audioStart = new Audio('start.mp3');
+      const audioBell = new Audio('Bell.mp3');
+      const workTime = 1500;
+      const breakTime = 300;
+      let counter = workTime;
+      let isCounting = false;
+      let isBreakTime = false;
+      let achievementBox = 0;
+      let counting;
+
+      button.addEventListener('click', () => buttonClicked());
+      notifyMe();
+      renderTimeValue();
+      addAchievementToBox('start');
+      document.title = 'Pomodoro';
+
+      function buttonClicked() {
+        isCounting ? pauseCounting() : startCounting();
+      }
+
+      function startCounting() {
+        isCounting = true;
+        changeButtonText();
+        renderTimeValue();
+        audioStart.play();
+
+        counting = setInterval(() => {
+          counter--;
+          renderTimeValue();
+          if (counter === 0) {
+            timeOut();
+          }
+        }, 1000);
+      }
+
+      function pauseCounting() {
+        clearInterval(counting);
+        isCounting = false;
+        renderTimeValue();
+        changeButtonText();
+      }
+
+      function changeButtonText() {
+        if (isCounting) {
+          button.innerText = 'pause';
+        } else {
+          button.innerText = 'start';
+        }
+      }
+
+      function renderTimeValue() {
+        const h2 = document.querySelector('h2');
+        let minutes = Math.floor(counter / 60);
+        if (minutes < 10) {
+          minutes = '0' + minutes;
+        }
+
+        let secondes = counter % 60;
+        if (secondes < 10) {
+          secondes = '0' + secondes;
+        }
+
+        h2.innerText = `${minutes}:${secondes}`;
+        if (!isCounting) {
+          document.title = ` Pause - ${minutes}:${secondes}`;
+        } else if (!isBreakTime) {
+          document.title = ` Work - ${minutes}:${secondes}`;
+        } else {
+          document.title = ` Break - ${minutes}:${secondes}`;
+        }
+      }
+
+      function timeOut() {
+        audioBell.play();
+        pauseCounting();
+        changeButtonText();
+        if (!isBreakTime) {
+          isBreakTime = true;
+          counter = breakTime;
+          addAchievementToBox();
+          renderTimeValue();
+          document.title = 'time to rest !';
+          notifyMe('time to rest !');
+        } else {
+          isBreakTime = false;
+          counter = workTime;
+          renderTimeValue();
+          document.title = 'time to work !';
+          notifyMe('time to work !');
+        }
+      }
+
+      function addAchievementToBox(option) {
+        const boxes = Array.from(document.querySelectorAll('.box span'));
+        if (option !== 'start') {
+          achievementBox++;
+        }
+        for (let i = 0; i < achievementBox; i++) {
+          if (achievementBox < 8) {
+            boxes[i].innerText = '🏆';
+          }
+        }
+      }
+
+      function notifyMe(message) {
+        if (!('Notification' in window)) {
+          alert('This browser does not support system notifications');
+        } else if (Notification.permission === 'granted' && message) {
+          notify(message);
+        } else if (Notification.permission !== 'denied') {
+          Notification.requestPermission(function(permission) {
+            if (permission === 'granted' && message) {
+              notify(message);
+            }
+          });
+        }
+
+        function notify(message) {
+          var notification = new Notification('Pomodoro', {
+            icon:
+              'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/tomato_1f345.png',
+            body: message
+          });
+        }
+      }
+    }
+  </script>
+</html>

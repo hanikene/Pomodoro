@@ -17,7 +17,7 @@
       * {
         margin: 0;
         padding: 0;
-        font-family: 'Roboto', sans-serif;
+        font-family: "Roboto", sans-serif;
         font-weight: 100;
         font-size: 1.3em;
       }
@@ -139,9 +139,9 @@
     init();
 
     function init() {
-      const button = document.querySelector('button');
-      const audioStart = new Audio('start.mp3');
-      const audioBell = new Audio('Bell.mp3');
+      const button = document.querySelector("button");
+      const audioStart = new Audio("start.mp3");
+      const audioBell = new Audio("Bell.mp3");
       const workTime = 1500;
       const breakTime = 300;
       let counter = workTime;
@@ -150,11 +150,11 @@
       let achievementBox = 0;
       let counting;
 
-      button.addEventListener('click', () => buttonClicked());
+      button.addEventListener("click", () => buttonClicked());
       notifyMe();
       renderTimeValue();
-      addAchievementToBox('start');
-      document.title = 'Pomodoro';
+      addAchievementToBox("start");
+      document.title = "Pomodoro";
 
       function buttonClicked() {
         isCounting ? pauseCounting() : startCounting();
@@ -184,22 +184,22 @@
 
       function changeButtonText() {
         if (isCounting) {
-          button.innerText = 'pause';
+          button.innerText = "pause";
         } else {
-          button.innerText = 'start';
+          button.innerText = "start";
         }
       }
 
       function renderTimeValue() {
-        const h2 = document.querySelector('h2');
+        const h2 = document.querySelector("h2");
         let minutes = Math.floor(counter / 60);
         if (minutes < 10) {
-          minutes = '0' + minutes;
+          minutes = "0" + minutes;
         }
 
         let secondes = counter % 60;
         if (secondes < 10) {
-          secondes = '0' + secondes;
+          secondes = "0" + secondes;
         }
 
         h2.innerText = `${minutes}:${secondes}`;
@@ -221,47 +221,46 @@
           counter = breakTime;
           addAchievementToBox();
           renderTimeValue();
-          document.title = 'time to rest !';
-          notifyMe('time to rest !');
+          document.title = "time to rest !";
+          notifyMe("time to rest !");
         } else {
           isBreakTime = false;
           counter = workTime;
           renderTimeValue();
-          document.title = 'time to work !';
-          notifyMe('time to work !');
+          document.title = "time to work !";
+          notifyMe("time to work !");
         }
       }
 
       function addAchievementToBox(option) {
-        const boxes = Array.from(document.querySelectorAll('.box span'));
-        if (option !== 'start') {
+        const boxes = Array.from(document.querySelectorAll(".box span"));
+        if (option !== "start") {
           achievementBox++;
         }
         for (let i = 0; i < achievementBox; i++) {
           if (achievementBox < 8) {
-            boxes[i].innerText = '🏆';
+            boxes[i].innerText = "🏆";
           }
         }
       }
 
       function notifyMe(message) {
-        if (!('Notification' in window)) {
-          alert('This browser does not support system notifications');
-        } else if (Notification.permission === 'granted' && message) {
+        if (!("Notification" in window)) {
+          alert("This browser does not support system notifications");
+        } else if (Notification.permission === "granted" && message) {
           notify(message);
-        } else if (Notification.permission !== 'denied') {
-          Notification.requestPermission(function(permission) {
-            if (permission === 'granted' && message) {
+        } else if (Notification.permission !== "denied") {
+          Notification.requestPermission(function (permission) {
+            if (permission === "granted" && message) {
               notify(message);
             }
           });
         }
 
         function notify(message) {
-          var notification = new Notification('Pomodoro', {
-            icon:
-              'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/tomato_1f345.png',
-            body: message
+          var notification = new Notification("Pomodoro", {
+            icon: "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/tomato_1f345.png",
+            body: message,
           });
         }
       }
